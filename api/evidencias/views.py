@@ -1,3 +1,4 @@
+from .filters import EvidenciaFilter
 from rest_framework import viewsets, status, filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -18,12 +19,6 @@ from api.services.cloudinary_service import subir_archivo
     list=extend_schema(
         summary='Listar evidencias',
         description='Retorna lista paginada de evidencias. Soporta filtros por categoría y proyecto, búsqueda por título, y ordenamiento.',
-        parameters=[
-            OpenApiParameter('categoria', description='Filtrar por categoría', required=False),
-            OpenApiParameter('nombre_proyecto', description='Filtrar por nombre de proyecto', required=False),
-            OpenApiParameter('search', description='Buscar en título y responsable', required=False),
-            OpenApiParameter('ordering', description='Ordenar por campo (ej: -created_at, titulo)', required=False),
-        ],
         tags=['Evidencias'],
     ),
     create=extend_schema(
@@ -54,11 +49,11 @@ class EvidenciaProyectoViewSet(viewsets.ModelViewSet):
     """
     queryset = EvidenciaProyecto.objects.all()
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser, JSONParser]
+    parser_classes = [MultiPartParser, JSONParser]
 
     # Filtros, búsqueda y ordenamiento
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['categoria', 'nombre_proyecto']
+    filterset_class = EvidenciaFilter
     search_fields = ['titulo', 'responsable']
     ordering_fields = ['created_at', 'fecha_registro', 'titulo', 'nombre_proyecto']
     ordering = ['-created_at']

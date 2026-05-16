@@ -36,6 +36,15 @@ source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+> **Nota:** Todos los comandos siguientes deben ejecutarse con el entorno virtual activo. 
+> Verifica que tu terminal muestre `(venv)` al inicio antes de ejecutar cualquier comando.
+
+# Activar el entorno virtual
+# Windows:
+venv\Scripts\activate
+
+# Mac/Linux:
+source venv/bin/activate
 ### 3. Configurar variables de entorno
 
 ```bash
@@ -117,9 +126,31 @@ evidencias_proyecto/
 └── manage.py
 ```
 
+## Generar token JWT para pruebas locales
+
+Como alternativa a Google SSO, puedes generar un token de prueba desde el shell de Django:
+
+```bash
+python manage.py shell
+```
+
+```python
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+
+user = User.objects.create_user(username='test@test.com', password='test123')
+refresh = RefreshToken.for_user(user)
+print(str(refresh.access_token))
+```
+
+Copia el token generado y pégalo en el botón **Authorize** de Swagger para probar los endpoints protegidos.
+
+> **Nota:** Asegúrate de tener el entorno virtual activo `(venv)` antes de ejecutar estos comandos.
+
+
 ## Despliegue
 
-URL pública: **[https://examen-1-lenguajes-production.up.railway.app/api/docs/]**
+URL pública: **https://examen-1-lenguajes-production.up.railway.app/api/docs/**
 
 ### Desplegar en Railway
 
@@ -128,10 +159,9 @@ URL pública: **[https://examen-1-lenguajes-production.up.railway.app/api/docs/]
 3. Agregar las variables de entorno en el panel de Railway
 4. Railway detecta automáticamente el proyecto Django
 
-## Problemas encontrados y soluciones
+## Problemas encontrados y soluciones aplicadas
 
-_Por completar durante el desarrollo_
-
----
-
-Proyecto desarrollado como actividad académica — Gestión de Evidencias Digitales.
+- Python no estaba instalado — se instaló desde python.org marcando "Add to PATH"
+- El pipeline de CI estaba configurado para la rama `main` pero el proyecto usa `master` — se corrigió el archivo ci.yml
+- Railway usaba el puerto 8080 en lugar de 8000 — se actualizó el Target Port en Railway
+- El deployment crasheó por falta de variables de entorno — se agregaron en el panel de Railway

@@ -4,13 +4,13 @@ from django.db import models
 class EvidenciaProyecto(models.Model):
 
     CATEGORIA_CHOICES = [
-        ('documento', 'Documento'),
-        ('imagen', 'Imagen'),
-        ('captura_pantalla', 'Captura de pantalla'),
-        ('informe', 'Informe'),
-        ('presentacion', 'Presentación'),
-        ('otro', 'Otro'),
-    ]
+    ('documento', 'Documento'),
+    ('imagen', 'Imagen'),
+    ('captura_pantalla', 'Captura de pantalla'),
+    ('informe', 'Informe'),
+    ('presentacion', 'Presentación'),
+    ('otro', 'Otro'),
+]
 
     # Información de la evidencia
     titulo = models.CharField(max_length=255, verbose_name='Título')
