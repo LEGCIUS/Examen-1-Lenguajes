@@ -119,7 +119,7 @@ evidencias_proyecto/
 
 ## Despliegue
 
-URL pública: **[por completar]**
+URL pública: **[https://examen-1-lenguajes-production.up.railway.app/api/docs/]**
 
 ### Desplegar en Railway
 
