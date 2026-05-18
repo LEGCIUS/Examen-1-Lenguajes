@@ -2,10 +2,15 @@ from pathlib import Path
 from datetime import timedelta
 from decouple import config
 
+# Configuracion base compartida entre todos los entornos (dev y prod).
+# Los valores sensibles se leen desde el archivo .env mediante decouple.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
 
+
+# Apps instaladas: primero las de Django, luego las de terceros
+# y al final las apps locales del proyecto.
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,6 +60,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api.wsgi.application'
 
+
+# Base de datos SQLite. Suficiente para el alcance del proyecto
+# y no requiere configuracion adicional.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -79,7 +87,12 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Django REST Framework
+
+
+# Configuracion global de DRF:
+# - JWT como metodo de autenticacion
+# - IsAuthenticated como permiso por defecto (todos los endpoints protegidos)
+# - Paginacion de 10 elementos por pagina
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -97,7 +110,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
-# JWT
+
+
+# Duracion de los tokens JWT. Access token: 1 hora, Refresh: 24 horas.
+# Los valores se pueden ajustar desde el .env sin tocar el codigo.
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(seconds=config('JWT_ACCESS_TOKEN_LIFETIME', default=3600, cast=int)),
     'REFRESH_TOKEN_LIFETIME': timedelta(seconds=config('JWT_REFRESH_TOKEN_LIFETIME', default=86400, cast=int)),
@@ -108,9 +124,13 @@ SIMPLE_JWT = {
 # Google OAuth
 GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID')
 
+
+
 # Cloudinary
 import cloudinary
 
+# Configuracion de Cloudinary para el almacenamiento externo de archivos.
+# Las credenciales vienen del .env para no exponerlas en el codigo.
 cloudinary.config(
     cloud_name=config('CLOUDINARY_CLOUD_NAME'),
     api_key=config('CLOUDINARY_API_KEY'),
@@ -120,7 +140,8 @@ cloudinary.config(
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# Swagger / OpenAPI
+# Configuracion de Swagger/OpenAPI para la documentacion automatica
+# disponible en /api/docs/.
 SPECTACULAR_SETTINGS = {
     'TITLE': 'API Evidencias Digitales',
     'DESCRIPTION': 'API para gestión de evidencias digitales de proyectos',

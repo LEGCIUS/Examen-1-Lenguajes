@@ -1,7 +1,9 @@
 from django.contrib import admin
 from .models import EvidenciaProyecto
 
-
+# Panel de administración de Django para gestión interna de evidencias.
+# No forma parte de los requisitos del proyecto pero Django lo incluye
+# por defecto y no afecta el funcionamiento de la API.
 @admin.register(EvidenciaProyecto)
 class EvidenciaProyectoAdmin(admin.ModelAdmin):
     list_display = ['titulo', 'nombre_proyecto', 'responsable', 'categoria', 'fecha_registro', 'created_at']

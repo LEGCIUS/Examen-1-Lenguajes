@@ -3,8 +3,10 @@ from .models import EvidenciaProyecto
 from .validators import validar_archivo
 
 
+# Serializer de lectura (GET). Convierte el objeto de la base de datos
+# a JSON. Incluye categoria_display para mostrar el nombre legible
+# de la categoria ademas del valor interno.
 class EvidenciaProyectoSerializer(serializers.ModelSerializer):
-    """Serializer para lectura (GET) de evidencias."""
 
     categoria_display = serializers.CharField(
         source='get_categoria_display',
@@ -36,8 +38,35 @@ class EvidenciaProyectoSerializer(serializers.ModelSerializer):
         ]
 
 
-class EvidenciaProyectoCreateSerializer(serializers.ModelSerializer):
-    """Serializer para creación de evidencias (incluye el campo archivo)."""
+# Clase base con las validaciones comunes de texto reutilizadas
+# por el serializer de creacion y el de actualizacion.
+class EvidenciaProyectoBaseSerializer(serializers.ModelSerializer):
+
+    # Valida que el titulo no este vacio.
+    def validate_titulo(self, value):
+        if not value.strip():
+            raise serializers.ValidationError('El título no puede estar vacío.')
+        return value.strip()
+
+    # Valida que el nombre del proyecto no este vacio.
+    def validate_nombre_proyecto(self, value):
+        if not value.strip():
+            raise serializers.ValidationError('El nombre del proyecto no puede estar vacío.')
+        return value.strip()
+
+    # Valida que la descripcion tenga al menos 10 caracteres.
+    def validate_descripcion(self, value):
+        if len(value.strip()) < 10:
+            raise serializers.ValidationError(
+                'La descripción debe tener al menos 10 caracteres.'
+            )
+        return value.strip()
+
+
+# Serializer de creacion (POST). Incluye el campo archivo que no
+# se guarda en el modelo directamente sino que se sube a Cloudinary.
+# Una vez creado el objeto devuelve la representacion completa.
+class EvidenciaProyectoCreateSerializer(EvidenciaProyectoBaseSerializer):
 
     archivo = serializers.FileField(write_only=True)
 
@@ -53,34 +82,19 @@ class EvidenciaProyectoCreateSerializer(serializers.ModelSerializer):
             'archivo',
         ]
 
-    def validate_titulo(self, value):
-        if not value.strip():
-            raise serializers.ValidationError('El título no puede estar vacío.')
-        return value.strip()
-
-    def validate_nombre_proyecto(self, value):
-        if not value.strip():
-            raise serializers.ValidationError('El nombre del proyecto no puede estar vacío.')
-        return value.strip()
-
-    def validate_descripcion(self, value):
-        if len(value.strip()) < 10:
-            raise serializers.ValidationError(
-                'La descripción debe tener al menos 10 caracteres.'
-            )
-        return value.strip()
-
+    # Delega la validacion del archivo al modulo validators.py.
     def validate_archivo(self, archivo):
         validar_archivo(archivo)
         return archivo
 
     def to_representation(self, instance):
-        """Al crear, devuelve la representación completa del objeto."""
         return EvidenciaProyectoSerializer(instance).data
 
 
-class EvidenciaProyectoUpdateSerializer(serializers.ModelSerializer):
-    """Serializer para actualización parcial (PATCH) de evidencias."""
+# Serializer de actualizacion parcial (PATCH). Solo permite modificar
+# los campos de texto, no el archivo. Este permanece en Cloudinary
+# tal como fue subido originalmente.
+class EvidenciaProyectoUpdateSerializer(EvidenciaProyectoBaseSerializer):
 
     class Meta:
         model = EvidenciaProyecto
@@ -92,16 +106,6 @@ class EvidenciaProyectoUpdateSerializer(serializers.ModelSerializer):
             'descripcion',
             'fecha_registro',
         ]
-
-    def validate_titulo(self, value):
-        if not value.strip():
-            raise serializers.ValidationError('El título no puede estar vacío.')
-        return value.strip()
-
-    def validate_nombre_proyecto(self, value):
-        if not value.strip():
-            raise serializers.ValidationError('El nombre del proyecto no puede estar vacío.')
-        return value.strip()
 
     def to_representation(self, instance):
         return EvidenciaProyectoSerializer(instance).data

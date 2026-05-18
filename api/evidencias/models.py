@@ -1,6 +1,13 @@
 from django.db import models
 
+# Modelo principal del sistema. Representa una evidencia digital
+# asociada a un proyecto. Almacena tanto los datos descriptivos
+# como la informacion del archivo subido a Cloudinary (url, nombre,
+# tipo, tamano y fecha de carga).
 
+# Categorias permitidas. Al definirlas aqui en el modelo, Django
+# las valida automaticamente a nivel de base de datos y los
+# serializers y filtros las heredan sin duplicar codigo.
 class EvidenciaProyecto(models.Model):
 
     CATEGORIA_CHOICES = [
@@ -24,17 +31,17 @@ class EvidenciaProyecto(models.Model):
     descripcion = models.TextField(max_length=500, verbose_name='Descripción')
     fecha_registro = models.DateField(verbose_name='Fecha de registro')
 
-    # Información del archivo (almacenado en Cloudinary)
+
     url_archivo = models.URLField(verbose_name='URL pública del archivo')
     nombre_archivo = models.CharField(max_length=255, verbose_name='Nombre original del archivo')
     tipo_archivo = models.CharField(max_length=100, verbose_name='Tipo de archivo (MIME)')
     tamano_archivo = models.PositiveIntegerField(verbose_name='Tamaño del archivo (bytes)')
     fecha_carga = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de carga')
 
-    # Control de registro
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de creación')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Última actualización')
 
+    # Ordena las evidencias de mas reciente a mas antigua por defecto.
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'Evidencia de Proyecto'

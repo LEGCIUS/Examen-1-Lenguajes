@@ -1,17 +1,18 @@
 from django.core.exceptions import ValidationError
+# Tipos de archivo permitidos y tamaño maximo (5 MB).
+# Centralizar estos valores aqui facilita cambiarlos sin tocar
+# la logica de validacio
 
 TIPOS_PERMITIDOS = ['image/jpeg', 'image/png', 'application/pdf']
 TAMANO_MAXIMO_MB = 5
-TAMANO_MAXIMO_BYTES = TAMANO_MAXIMO_MB * 1024 * 1024  # 5 MB
+TAMANO_MAXIMO_BYTES = TAMANO_MAXIMO_MB * 1024 * 1024 
 
 
+# Valida que el archivo exista, sea de un tipo permitido y no supere
+# el tamaño maximo. Se llama desde el serializer de creacion antes
+# de subir el archivo a Cloudinary.
 def validar_archivo(archivo):
-    """
-    Valida que el archivo:
-    - Exista en la solicitud
-    - Sea de un tipo permitido (JPEG, PNG, PDF)
-    - No supere el tamaño máximo (5 MB)
-    """
+   
     if not archivo:
         raise ValidationError('El archivo es requerido.')
 

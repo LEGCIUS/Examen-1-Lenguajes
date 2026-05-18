@@ -9,7 +9,8 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from decouple import config
 
-
+# Genera el par de tokens JWT (access y refresh) para un usuario ya
+# verificado. SimpleJWT se encarga de firmarlos.
 def get_tokens_for_user(user):
     """Genera par de tokens JWT para el usuario dado."""
     refresh = RefreshToken.for_user(user)
@@ -19,6 +20,14 @@ def get_tokens_for_user(user):
     }
 
 
+# Endpoint principal de autenticacion. El flujo es:
+# 1. Recibe el id_token que Google genera cuando el usuario inicia sesion
+# 2. Verifica que el token sea valido usando la libreria google-auth
+# 3. Extrae el email, nombre y apellido del token verificado
+# 4. Busca el usuario en la base de datos, si no existe lo crea
+# 5. Genera y devuelve un par de tokens JWT (access y refresh)
+# El endpoint es publico (AllowAny) porque es la puerta de entrada,
+# aun no hay JWT con que autenticarse
 @extend_schema(
     summary="Autenticación con Google",
     description=(
@@ -56,11 +65,13 @@ def get_tokens_for_user(user):
 )
 @api_view(['POST'])
 @permission_classes([AllowAny])
+
+
+
+#POST /auth/google
+#Verifica el id_token de Google y retorna tokens JWT.
 def google_login(request):
-    """
-    POST /auth/google
-    Verifica el id_token de Google y retorna tokens JWT.
-    """
+    
     token = request.data.get('token')
     if not token:
         return Response(

@@ -6,9 +6,13 @@ from rest_framework.response import Response
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
+
+
+# Endpoint publico que verifica que la API este activa y respondiendo.
+# No requiere autenticacion. Util para monitoreo y para verificar
+# el despliegue en Railway.
 def health_check(request):
     return Response({'status': 'ok', 'message': 'API funcionando correctamente'})
-
 
 urlpatterns = [
     path('', health_check, name='health'),

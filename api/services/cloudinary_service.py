@@ -1,20 +1,12 @@
 import cloudinary.uploader
 from rest_framework.exceptions import ValidationError
 
-
+# Sube un archivo a Cloudinary (CDN externo) y devuelve sus metadatos:
+# url pública, nombre original, tipo y tamaño. La API nunca guarda
+# archivos en el servidor local.
 def subir_archivo(archivo, carpeta='evidencias'):
-    """
-    Sube un archivo a Cloudinary y retorna la información del resultado.
-
-    Args:
-        archivo: InMemoryUploadedFile o TemporaryUploadedFile de Django
-        carpeta: carpeta en Cloudinary donde se almacenará
-
-    Returns:
-        dict con url, nombre_archivo, tipo_archivo, tamano_archivo
-    """
+    
     try:
-        # Determinar el tipo de recurso según el content_type
         resource_type = 'raw'
         if archivo.content_type.startswith('image/'):
             resource_type = 'image'
@@ -40,11 +32,10 @@ def subir_archivo(archivo, carpeta='evidencias'):
         )
 
 
+# Elimina un archivo de Cloudinary por su public_id. No lanza error
+# si el archivo no existe para no interrumpir el borrado de la evidencia.
 def eliminar_archivo(public_id):
-    """
-    Elimina un archivo de Cloudinary por su public_id.
-    No lanza error si el archivo no existe.
-    """
+
     try:
         cloudinary.uploader.destroy(public_id)
     except Exception:
