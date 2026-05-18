@@ -6,13 +6,14 @@ from rest_framework.parsers import MultiPartParser, JSONParser
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 
+
 from .models import EvidenciaProyecto
 from .serializers import (
     EvidenciaProyectoSerializer,
     EvidenciaProyectoCreateSerializer,
     EvidenciaProyectoUpdateSerializer,
 )
-from api.services.cloudinary_service import subir_archivo
+from api.services.cloudinary_service import subir_archivo, eliminar_archivo
 
 
 @extend_schema_view(
@@ -124,3 +125,17 @@ class EvidenciaProyectoViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_405_METHOD_NOT_ALLOWED
             )
         return super().update(request, *args, **kwargs)
+
+
+  # Eliminacion de evidencia. Primero elimina el archivo de Cloudinary
+  # y luego elimina el registro de la base de datos.
+    def destroy(self, request, *args, **kwargs):
+        evidencia = self.get_object()
+
+        url = evidencia.url_archivo
+        public_id = '/'.join(url.split('/')[-2:]).split('.')[0]
+
+
+        eliminar_archivo(public_id)
+
+        return super().destroy(request, *args, **kwargs)

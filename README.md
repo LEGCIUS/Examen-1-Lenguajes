@@ -62,7 +62,7 @@ python manage.py createsuperuser
 ### 5. Ejecutar el servidor
 
 ```bash
-python manage.py runserver
+{python manage.py runserver}
 ```
 
 La API estará disponible en `http://localhost:8000`
@@ -134,7 +134,7 @@ Como alternativa a Google SSO, puedes generar un token de prueba desde el shell 
 python manage.py shell
 ```
 
-```python
+```pythonhttps://res.cloudinary.com/dm8tazlaf/image/upload/v1779062249/evidencias/Captura_de_pantalla_2026-05-13_201436_e2kd9d.png
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -143,9 +143,27 @@ refresh = RefreshToken.for_user(user)
 print(str(refresh.access_token))
 ```
 
+
 Copia el token generado y pégalo en el botón **Authorize** de Swagger para probar los endpoints protegidos.
 
 > **Nota:** Asegúrate de tener el entorno virtual activo `(venv)` antes de ejecutar estos comandos.
+
+> **Nota 2:** En caso tal de que queramos volver a conseguir el token usando este metodo anterior, muy probablemente nos vaya a dar error por como esta puesto el codigo ya que estamos creado variables y si lo volvemos a ejecutar va a dar error por que ya existe
+
+Solucion:
+
+```python
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+
+user, created = User.objects.get_or_create(username='test@test.com')
+if created:
+    user.set_password('test123')
+    user.save()
+
+refresh = RefreshToken.for_user(user)
+print(str(refresh.access_token))
+```
 
 
 ## Despliegue
@@ -165,3 +183,4 @@ URL pública: **https://examen-1-lenguajes-production.up.railway.app/api/docs/**
 - El pipeline de CI estaba configurado para la rama `main` pero el proyecto usa `master` — se corrigió el archivo ci.yml
 - Railway usaba el puerto 8080 en lugar de 8000 — se actualizó el Target Port en Railway
 - El deployment crasheó por falta de variables de entorno — se agregaron en el panel de Railway
+
