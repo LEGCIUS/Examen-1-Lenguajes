@@ -1,15 +1,27 @@
 name: CI Pipeline
+
+# Pipeline de integracion continua. Se ejecuta automaticamente
+# en cada push a master o pull request. Verifica que el proyecto
+# este en buen estado antes de desplegar.
 on:
   push:
     branches: [ master, main, develop ]
   pull_request:
     branches: [ master, main ]
 
+
+
+# Pasos del pipeline:
+# 1. Descarga el codigo del repositorio
+# 2. Instala Python 3.11
+# 3. Instala las dependencias del proyecto
+# 4. Verifica que Django no tenga errores de configuracion
+# 5. Verifica que las migraciones esten al dia
 jobs:
   verificar:
     name: Verificar proyecto
     runs-on: ubuntu-latest
-
+      
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
