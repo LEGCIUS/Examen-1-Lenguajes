@@ -1,3 +1,16 @@
+
+# Examen de Lenguajes para aplicaciones comerciales
+|Integrantes:||
+|---|---|
+|-Rick Daniel Rodriguez Bristan|
+|-Dennis Jimenez Arias|
+|-Andy Chavarria|
+|-Luis Altamirano|
+|- Jeremy Fonseca|
+
+Docente: Juan Gamboa Abarca
+
+
 # API Evidencias Digitales
 
 API REST para gestión de evidencias digitales asociadas a proyectos académicos o profesionales.
